@@ -159,7 +159,7 @@ export class GameRoom {
         if (data.type === "undo_request") {
             if (this.moveHistory.length === 0) return;
             const lastMoverColor = this.game.turn() === "w" ? "b" : "w";
-            if (lastMoverColor !== session.color) return; // can only undo your own most recent move
+            if (lastMoverColor !== session.color) return;
             if (this.pendingUndo) return;
 
             this.pendingUndo = { requesterRole: session.role };
@@ -223,6 +223,12 @@ export class GameRoom {
                 },
                 null,
             );
+            return;
+        }
+
+        if (data.type === "reaction") {
+            if (typeof data.emoji !== "string" || data.emoji.length > 8) return;
+            this.broadcast({ type: "reaction", emoji: data.emoji }, ws);
             return;
         }
     }
